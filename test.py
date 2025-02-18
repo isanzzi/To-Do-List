@@ -80,7 +80,20 @@ def actionTodo(id, todos, idCount):
 def editTodo(todos, id):
     for todo in todos:
         if todo["id"] == id:
-            todo["name"] = input("Ganti nama TODO: ")
+            new_name = input("Ganti nama TODO (tekan enter untuk tidak mengubah): ")
+            if new_name:
+                todo["name"] = new_name
+            
+            new_deadline_str = input("Ganti deadline (DD/MM/YYYY HH:MM) (tekan enter untuk tidak mengubah): ")
+            if new_deadline_str:
+                try:
+                    new_deadline = datetime.datetime.strptime(new_deadline_str, "%d/%m/%Y %H:%M")
+                    todo["deadline"] = new_deadline_str
+                    # Update time left after changing the deadline
+                    dateNow = datetime.datetime.now()
+                    todo["timeLeft"] = str(new_deadline - dateNow)
+                except ValueError:
+                    print("Format tanggal salah. Harap masukkan dalam format DD/MM/YYYY HH:MM.")
 
 
 def doneTodo(todos, id):
