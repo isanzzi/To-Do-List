@@ -1,16 +1,30 @@
 [
-    {
-        "id": 1,
-        "name": "belajar",
-        "deadline": "02/02/2026 06:45",
-        "timeLeft": "348 days, 19:07:58.771983",
-        "status": false
-    },
-    {
-        "id": 2,
-        "name": "makan",
-        "deadline": "02/07/2028 03:45",
-        "timeLeft": "1229 days, 15:54:10.321037",
-        "status": false
-    }
+  {
+    "id": 1,
+    "name": "belajar",
+    "deadline": "02/02/2026 06:45",
+    "timeLeft": "348 days, 19:07:58.771983",
+    "status": false
+  },
+  {
+    "id": 2,
+    "name": "vruhuhuhur",
+    "deadline": "02/07/2028 03:45",
+    "timeLeft": "1229 days, 15:54:10.321037",
+    "status": true
+  },
+  {
+    "id": 3,
+    "name": "baca buku gede",
+    "deadline": "12/12/2027 00:00",
+    "timeLeft": "1026 days, 8:57:45.897456",
+    "status": true
+  },
+  {
+    "id": 4,
+    "name": "apel bersama-sama",
+    "deadline": "10/10/2025 00:00",
+    "timeLeft": "233 days, 8:52:40.159209",
+    "status": false
+  }
 ]

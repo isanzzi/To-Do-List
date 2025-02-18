@@ -2,6 +2,7 @@ import os
 import json
 import datetime
 # import countdown
+from prettytable import PrettyTable
 
 
 def clearTerminal():
@@ -94,31 +95,37 @@ def getTodos(todos, idCount):
     return todos, idCount
 
 
-def printHeaderTodo():
-    print(
-        "No."
-        + " | "
-        + "Nama"
-        + " | "
-        + "Status"
-        + " | "
-        + "Deadline"
-        + " | "
-        + "Time left"
-    )
+def printHeaderTodo(table):
+    table.field_names = ["No.", "Nama", "Status", "Deadline", "Time Left"]
+    # print(
+    #     "No."
+    #     + " | "
+    #     + "Nama"
+    #     + " | "
+    #     + "Status"
+    #     + " | "
+    #     + "Deadline"
+    #     + " | "
+    #     + "Time left"
+    # )
+    return table
 
 
 def printTodo(todo):
-    print(
-        "| "
-        + todo["name"]
-        + " | "
-        + ("done" if todo["status"] else "not done")
-        + " | "
-        + (todo["timeLeft"] if todo["status"] else todo["deadline"])
-        + " | "
-        + todo["timeLeft"]
-    )
+    table = PrettyTable()
+    table.field_names = ["Nama", "Status", "Deadline", "Time Left"]
+    table.add_row([todo["name"], "done" if todo["status"] else "not done", todo["timeLeft"] if todo["status"] else todo["deadline"], todo["timeLeft"]])
+    print(table)
+    # print(
+    #     "| "
+    #     + todo["name"]
+    #     + " | "
+    #     + ("done" if todo["status"] else "not done")
+    #     + " | "
+    #     + (todo["timeLeft"] if todo["status"] else todo["deadline"])
+    #     + " | "
+    #     + todo["timeLeft"]
+    # )
     # i += 1
     #     + ". "  # Period followed by a space for formatting
     #     + " | "  # Separator
@@ -132,13 +139,16 @@ def printTodo(todo):
 
 
 def printTodos(todos):
+    table = PrettyTable()
     print("TODO List:")
-    printHeaderTodo()
+    table = printHeaderTodo(table)
     i = 1
     for todo in todos:
-        print(str(i) + ". ", end="")
-        printTodo(todo)
+        # print(str(i) + ". ", end="")
+        # printTodo(todo)
+        table.add_row([i, todo["name"], "done" if todo["status"] else "not done", todo["timeLeft"] if todo["status"] else todo["deadline"], todo["timeLeft"]])
         i += 1
+    print(table)
 
 
 def filterTodo(todos, hide):
