@@ -1,1 +1,16 @@
-[{"id": 0, "name": "sala", "status": false}, {"id": 1, "name": "bruh momentos", "status": false}, {"id": 2, "name": "wawawa", "status": false}, {"id": 3, "name": "halo bos", "status": false}, {"id": 4, "name": "masak", "status": false}, {"id": 5, "name": "bruh", "status": false}, {"id": 6, "name": "tuple", "status": false}, {"id": 7, "name": "waw", "status": false}, {"id": 8, "name": "pr sda", "status": false}]
+[
+    {
+        "id": 1,
+        "name": "belajar",
+        "deadline": "02/02/2026 06:45",
+        "timeLeft": "348 days, 19:07:58.771983",
+        "status": false
+    },
+    {
+        "id": 2,
+        "name": "makan",
+        "deadline": "02/07/2028 03:45",
+        "timeLeft": "1229 days, 15:54:10.321037",
+        "status": false
+    }
+]
