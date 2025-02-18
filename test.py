@@ -1,6 +1,7 @@
 import os
 import json
 import datetime
+
 # import countdown
 from prettytable import PrettyTable
 
@@ -34,12 +35,14 @@ def createTodo(todos, i):
     updateTodo(todos)
     return todos, i
 
+
 def updateTimeLeft(todos):
     for todo in todos:
         deadline = datetime.datetime.strptime(todo["deadline"], "%d/%m/%Y %H:%M")
         dateNow = datetime.datetime.now()
         todo["timeLeft"] = str(deadline - dateNow)
     updateTodo(todos)
+
 
 def updateTodo(todos):
     file = open("todo.json", "w")
@@ -119,7 +122,14 @@ def printHeaderTodo(table):
 def printTodo(todo):
     table = PrettyTable()
     table.field_names = ["Nama", "Status", "Deadline", "Time Left"]
-    table.add_row([todo["name"], "done" if todo["status"] else "not done", todo["timeLeft"] if todo["status"] else todo["deadline"], todo["timeLeft"]])
+    table.add_row(
+        [
+            todo["name"],
+            "done" if todo["status"] else "not done",
+            todo["timeLeft"] if todo["status"] else todo["deadline"],
+            todo["timeLeft"],
+        ]
+    )
     print(table)
     # print(
     #     "| "
@@ -151,14 +161,27 @@ def printTodos(todos):
     for todo in todos:
         # print(str(i) + ". ", end="")
         # printTodo(todo)
-        table.add_row([i, todo["name"], "done" if todo["status"] else "not done", todo["timeLeft"] if todo["status"] else todo["deadline"], todo["timeLeft"]])
+        table.add_row(
+            [
+                i,
+                todo["name"],
+                "done" if todo["status"] else "not done",
+                todo["timeLeft"] if todo["status"] else todo["deadline"],
+                todo["timeLeft"],
+            ]
+        )
         i += 1
     print(table)
 
 
-def filterTodo(todos, hide):
+def filterTodos(todos, hide):
     if hide:
         todos = [todo for todo in todos if not todo["status"]]
+    return todos
+
+
+def sortTodos(todos):
+    todos = sorted(todos, key=lambda todo: todo["status"])
     return todos
 
 
@@ -171,7 +194,8 @@ hideDone = False
 while isRunning:
     # Return the updated serial number
     todos, idCount = getTodos(todos, idCount)
-    todosFiltered = filterTodo(todos, hideDone)
+    todosFiltered = filterTodos(todos, hideDone)
+    todosFiltered = sortTodos(todosFiltered)
     clearTerminal()
 
     printTodos(todosFiltered)

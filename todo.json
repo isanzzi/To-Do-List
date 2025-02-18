@@ -3,15 +3,15 @@
     "id": 1,
     "name": "belajar",
     "deadline": "02/02/2026 06:45",
-    "timeLeft": "348 days, 15:11:12.392521",
-    "status": false,
+    "timeLeft": "348 days, 14:29:52.587213",
+    "status": true,
     "timeleft": "348 days, 15:12:32.884555"
   },
   {
     "id": 2,
     "name": "vruhuhuhur",
     "deadline": "02/07/2028 03:45",
-    "timeLeft": "1229 days, 12:11:12.392482",
+    "timeLeft": "1229 days, 11:29:52.587160",
     "status": true,
     "timeleft": "1229 days, 12:12:32.884503"
   },
@@ -19,24 +19,38 @@
     "id": 3,
     "name": "baca buku gede",
     "deadline": "12/12/2027 00:00",
-    "timeLeft": "1026 days, 8:26:12.392461",
-    "status": false,
+    "timeLeft": "1026 days, 7:44:52.587131",
+    "status": true,
     "timeleft": "1026 days, 8:27:32.884476"
   },
   {
     "id": 4,
-    "name": "apel bersama-sama",
+    "name": "puasa",
     "deadline": "10/10/2025 00:00",
-    "timeLeft": "233 days, 8:26:12.392439",
-    "status": true,
+    "timeLeft": "233 days, 7:44:52.587105",
+    "status": false,
     "timeleft": "233 days, 8:27:32.884451"
   },
   {
     "id": 5,
     "name": "makan bubur",
     "deadline": "5/5/2025 00:00",
-    "timeLeft": "75 days, 8:26:12.392423",
+    "timeLeft": "75 days, 7:44:52.587080",
     "status": true,
     "timeleft": "75 days, 8:27:32.884426"
+  },
+  {
+    "id": 6,
+    "name": "scroll insta",
+    "deadline": "19/02/2025 23:59",
+    "timeLeft": "1 day, 7:43:52.587056",
+    "status": false
+  },
+  {
+    "id": 7,
+    "name": "cuci muka",
+    "deadline": "30/12/2028 00:00",
+    "timeLeft": "1410 days, 7:44:52.587032",
+    "status": false
   }
 ]
