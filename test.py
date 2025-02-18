@@ -31,10 +31,15 @@ def createTodo(todos, i):
     # file = open("todo.json", "w")
     # json.dump(todos, file)
     # file.close()
-    with open("todo.json", "w") as file:
-        json.dump(todos, file, indent=4)
+    updateTodo(todos)
     return todos, i
 
+def updateTimeLeft(todos):
+    for todo in todos:
+        deadline = datetime.datetime.strptime(todo["deadline"], "%d/%m/%Y %H:%M")
+        dateNow = datetime.datetime.now()
+        todo["timeLeft"] = str(deadline - dateNow)
+    updateTodo(todos)
 
 def updateTodo(todos):
     file = open("todo.json", "w")
@@ -191,3 +196,4 @@ while isRunning:
         except ValueError:
             err = True
             print("bruh")
+    updateTimeLeft(todos)
