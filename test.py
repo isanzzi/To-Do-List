@@ -13,6 +13,7 @@ def actionTodo(id, todos):
     while isRunning:
         clearTerminal()
         thisTodo = next((todo for todo in todos if todo["id"] == id), {})
+        # if thisTodo:
         printTodo(thisTodo)
         print(
             "Menu:\n- e untuk edit nama\n- d untuk delete\n- x untuk toggle done\n- q untuk kembali ke halaman utama"
@@ -21,12 +22,14 @@ def actionTodo(id, todos):
         if menuselect == "e":
             editTodo(thisTodo, todos)
         elif menuselect == "d":
-            deleteTodo(todos, thisTodo)
+            todos = deleteTodo(todos, thisTodo)
+            isRunning = False
         elif menuselect == "x":
             doneTodo(todos, thisTodo)
         elif menuselect == "q":
             isRunning = False
-
+        # else:
+        #     isRunning = False
     updateTodo(todos)
     return todos
 
@@ -64,8 +67,10 @@ def createTodo(todos, i):
 
 def deleteTodo(todos, todo):
     if todo in todos:
-        del todos[todo]
+        todos = [todo1 for todo1 in todos if todo1 != todo]
         updateTodo(todos)
+
+    return todos
 
 
 def updatestodostatus(todos, todo):
@@ -215,7 +220,7 @@ while isRunning:
             int(menuselect)
             if (int(menuselect) > 0) and (int(menuselect) <= len(todosFiltered)):
                 id = todosFiltered[int(menuselect) - 1]["id"]
-                actionTodo(id, todos)
+                todos = actionTodo(id, todos)
         except ValueError:
             err = True
     updateTimeLeft(todos)
