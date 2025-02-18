@@ -1,22 +1,26 @@
 import os
 import json
 import datetime
-
-# import countdown
 from prettytable import PrettyTable
-
 
 def clearTerminal():
     os.system("cls" if os.name == "nt" else "clear")
-
 
 def createTodo(todos, i):
     clearTerminal()
     i += 1
     print("New TODO: ")
     newTodo = input()
-    deadline_str = input("Enter deadline (DD/MM/YYYY HH:MM): ")
-    deadline = datetime.datetime.strptime(deadline_str, "%d/%m/%Y %H:%M")
+    
+    # Loop untuk memastikan input tanggal valid
+    while True:
+        deadline_str = input("Enter deadline (DD/MM/YYYY HH:MM): ")
+        try:
+            deadline = datetime.datetime.strptime(deadline_str, "%d/%m/%Y %H:%M")
+            break  # Keluar dari loop jika format benar
+        except ValueError:
+            print("Format tanggal salah. Harap masukkan dalam format DD/MM/YYYY HH:MM.")
+    
     dateNow = datetime.datetime.now()
     timeleft = deadline - dateNow
 
@@ -29,9 +33,6 @@ def createTodo(todos, i):
             "status": False,
         }
     )
-    # file = open("todo.json", "w")
-    # json.dump(todos, file)
-    # file.close()
     updateTodo(todos)
     return todos, i
 
@@ -43,38 +44,29 @@ def updateTimeLeft(todos):
         todo["timeLeft"] = str(deadline - dateNow)
     updateTodo(todos)
 
-
 def updateTodo(todos):
-    file = open("todo.json", "w")
+    file = open("todo.txt", "w")
     json.dump(todos, file, indent=2)
     file.close()
 
+def validateDeadline(new_deadline_str):
+    try:
+        new_deadline = datetime.datetime.strptime(new_deadline_str, "%d/%m/%Y %H:%M")
+        return new_deadline
+    except ValueError:
+        return None
 
-# def deleteTodo(todos, todo):
-#     if todo in todos:
-#         file = open("todo.txt", "w")
-#
-def actionTodo(id, todos, idCount):
-    isRunning = True
-    while isRunning:
-        clearTerminal()
-        thisTodo = next((todo for todo in todos if todo["id"] == id), {})
-        printTodo(thisTodo)
-        print(
-            "e untuk edit nama, d untuk delete, x untuk toggle done, q untuk kembali ke halaman utama"
-        )
-        menuselect = input()
-        if menuselect == "e":
-            editTodo(todos, id)
-        # elif menuselect == "d":
-        #     deleteTodo(todos, id):
-        elif menuselect == "x":
-            doneTodo(todos, id)
-        elif menuselect == "q":
-            isRunning = False
-
-    updateTodo(todos)
-    return todos, idCount
+def editDeadline(todo):
+    new_deadline_str = input("Ganti deadline (DD/MM/YYYY HH:MM) (tekan enter untuk tidak mengubah): ")
+    
+    if new_deadline_str:
+        new_deadline = validateDeadline(new_deadline_str)
+        if new_deadline:
+            todo["deadline"] = new_deadline_str
+            dateNow = datetime.datetime.now()
+            todo["timeLeft"] = str(new_deadline - dateNow)
+        else:
+            print("Format tanggal salah. Harap masukkan dalam format DD/MM/YYYY HH:MM.")
 
 
 def editTodo(todos, id):
@@ -83,88 +75,40 @@ def editTodo(todos, id):
             new_name = input("Ganti nama TODO (tekan enter untuk tidak mengubah): ")
             if new_name:
                 todo["name"] = new_name
-            
-            new_deadline_str = input("Ganti deadline (DD/MM/YYYY HH:MM) (tekan enter untuk tidak mengubah): ")
-            if new_deadline_str:
-                try:
-                    new_deadline = datetime.datetime.strptime(new_deadline_str, "%d/%m/%Y %H:%M")
-                    todo["deadline"] = new_deadline_str
-                    # Update time left after changing the deadline
-                    dateNow = datetime.datetime.now()
-                    todo["timeLeft"] = str(new_deadline - dateNow)
-                except ValueError:
-                    print("Format tanggal salah. Harap masukkan dalam format DD/MM/YYYY HH:MM.")
-
+            editDeadline(todo)
 
 def doneTodo(todos, id):
     for todo in todos:
         if todo["id"] == id:
             todo["status"] = not todo["status"]
 
-
-#
-# def updateTodo(todos, newTodo):
-#     file = open("todo.txt", "w")
-#
 def getTodos(todos, idCount):
-    file = open("todo.json", "r")
-    todos = json.load(file)
-
-    if len(todos) != 0:
-        idCount = todos[len(todos) - 1]["id"]
-
+    try:
+        with open("todo.txt", "r") as file:
+            todos = json.load(file)
+            if len(todos) != 0:
+                idCount = todos[len(todos) - 1]["id"]
+    except FileNotFoundError:
+        # Jika file tidak ada, buat file kosong
+        with open("todo.txt", "w") as file:
+            json.dump([], file, indent=2)
     return todos, idCount
 
 
 def printHeaderTodo(table):
     table.field_names = ["No.", "Nama", "Status", "Deadline", "Time Left"]
-    # print(
-    #     "No."
-    #     + " | "
-    #     + "Nama"
-    #     + " | "
-    #     + "Status"
-    #     + " | "
-    #     + "Deadline"
-    #     + " | "
-    #     + "Time left"
-    # )
     return table
-
 
 def printTodo(todo):
     table = PrettyTable()
     table.field_names = ["Nama", "Status", "Deadline", "Time Left"]
-    table.add_row(
-        [
-            todo["name"],
-            "done" if todo["status"] else "not done",
-            todo["timeLeft"] if todo["status"] else todo["deadline"],
-            todo["timeLeft"],
-        ]
-    )
+    table.add_row([
+        todo["name"],
+        "done" if todo["status"] else "not done",
+        todo["timeLeft"] if todo["status"] else todo["deadline"],
+        todo["timeLeft"],
+    ])
     print(table)
-    # print(
-    #     "| "
-    #     + todo["name"]
-    #     + " | "
-    #     + ("done" if todo["status"] else "not done")
-    #     + " | "
-    #     + (todo["timeLeft"] if todo["status"] else todo["deadline"])
-    #     + " | "
-    #     + todo["timeLeft"]
-    # )
-    # i += 1
-    #     + ". "  # Period followed by a space for formatting
-    #     + " | "  # Separator
-    #     + todo["name"]  # Name of the todo item
-    #     + " | "  # Separator
-    #     + ("done" if todo["status"] else "not done")  # Status based on completion
-    #     + " | "  # Separator
-    #     + (todo["timeLeft"] if todo["status"] else todo["deadline"])  # Show time left if done, else show deadline
-    #     + " |"  # Separator
-    #     + todo["timeLeft"]  # Time left until deadline
-
 
 def printTodos(todos):
     table = PrettyTable()
@@ -172,45 +116,35 @@ def printTodos(todos):
     table = printHeaderTodo(table)
     i = 1
     for todo in todos:
-        # print(str(i) + ". ", end="")
-        # printTodo(todo)
-        table.add_row(
-            [
-                i,
-                todo["name"],
-                "done" if todo["status"] else "not done",
-                todo["timeLeft"] if todo["status"] else todo["deadline"],
-                todo["timeLeft"],
-            ]
-        )
+        table.add_row([
+            i,
+            todo["name"],
+            "done" if todo["status"] else "not done",
+            todo["timeLeft"] if todo["status"] else todo["deadline"],
+            todo["timeLeft"],
+        ])
         i += 1
     print(table)
-
 
 def filterTodos(todos, hide):
     if hide:
         todos = [todo for todo in todos if not todo["status"]]
     return todos
 
-
 def sortTodos(todos):
     todos = sorted(todos, key=lambda todo: todo["status"])
     return todos
-
 
 idCount = 0
 todos = []
 isRunning = True
 hideDone = False
 
-# Increment the serial number for the next todo item
 while isRunning:
-    # Return the updated serial number
     todos, idCount = getTodos(todos, idCount)
     todosFiltered = filterTodos(todos, hideDone)
     todosFiltered = sortTodos(todosFiltered)
     clearTerminal()
-
     printTodos(todosFiltered)
     print(
         "Menu:\n- q untuk quit\n- pilih nomer untuk edit, done, atau delete\n- c untuk create\n- "
@@ -229,8 +163,7 @@ while isRunning:
             int(menuselect)
             if (int(menuselect) > 0) and (int(menuselect) <= len(todosFiltered)):
                 id = todosFiltered[int(menuselect) - 1]["id"]
-                todos, idCount = actionTodo(id, todos, idCount)
+                editTodo(todos, id)
         except ValueError:
             err = True
-            print("bruh")
     updateTimeLeft(todos)
