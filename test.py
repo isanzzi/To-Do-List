@@ -3,15 +3,40 @@ import json
 import datetime
 from prettytable import PrettyTable
 
+
 def clearTerminal():
     os.system("cls" if os.name == "nt" else "clear")
+
+
+def actionTodo(id, todos):
+    isRunning = True
+    while isRunning:
+        clearTerminal()
+        thisTodo = next((todo for todo in todos if todo["id"] == id), {})
+        printTodo(thisTodo)
+        print(
+            "Menu:\n- e untuk edit nama\n- d untuk delete\n- x untuk toggle done\n- q untuk kembali ke halaman utama"
+        )
+        menuselect = input()
+        if menuselect == "e":
+            editTodo(thisTodo, todos)
+        elif menuselect == "d":
+            deleteTodo(todos, thisTodo)
+        elif menuselect == "x":
+            doneTodo(todos, thisTodo)
+        elif menuselect == "q":
+            isRunning = False
+
+    updateTodo(todos)
+    return todos
+
 
 def createTodo(todos, i):
     clearTerminal()
     i += 1
     print("New TODO: ")
     newTodo = input()
-    
+
     # Loop untuk memastikan input tanggal valid
     while True:
         deadline_str = input("Enter deadline (DD/MM/YYYY HH:MM): ")
@@ -20,7 +45,7 @@ def createTodo(todos, i):
             break  # Keluar dari loop jika format benar
         except ValueError:
             print("Format tanggal salah. Harap masukkan dalam format DD/MM/YYYY HH:MM.")
-    
+
     dateNow = datetime.datetime.now()
     timeleft = deadline - dateNow
 
@@ -36,9 +61,12 @@ def createTodo(todos, i):
     updateTodo(todos)
     return todos, i
 
+
 def deleteTodo(todos, todo):
     if todo in todos:
         del todos[todo]
+        updateTodo(todos)
+
 
 def updatestodostatus(todos, todo):
     for i, todo in enumerate(todos, start=1):
@@ -52,10 +80,12 @@ def updateTimeLeft(todos):
         todo["timeLeft"] = str(deadline - dateNow)
     updateTodo(todos)
 
+
 def updateTodo(todos):
     file = open("todo.txt", "w")
     json.dump(todos, file, indent=2)
     file.close()
+
 
 def validateDeadline(new_deadline_str):
     try:
@@ -64,9 +94,12 @@ def validateDeadline(new_deadline_str):
     except ValueError:
         return None
 
+
 def editDeadline(todo):
-    new_deadline_str = input("Ganti deadline (DD/MM/YYYY HH:MM) (tekan enter untuk tidak mengubah): ")
-    
+    new_deadline_str = input(
+        "Ganti deadline (DD/MM/YYYY HH:MM) (tekan enter untuk tidak mengubah): "
+    )
+
     if new_deadline_str:
         new_deadline = validateDeadline(new_deadline_str)
         if new_deadline:
@@ -77,18 +110,20 @@ def editDeadline(todo):
             print("Format tanggal salah. Harap masukkan dalam format DD/MM/YYYY HH:MM.")
 
 
-def editTodo(todos, id):
-    for todo in todos:
-        if todo["id"] == id:
-            new_name = input("Ganti nama TODO (tekan enter untuk tidak mengubah): ")
-            if new_name:
-                todo["name"] = new_name
-            editDeadline(todo)
+def editTodo(todo, todos):
+    clearTerminal()
+    printTodo(todo)
+    if todo in todos:
+        new_name = input("Ganti nama TODO (tekan enter untuk tidak mengubah): ")
+        if new_name:
+            todo["name"] = new_name
+        editDeadline(todo)
 
-def doneTodo(todos, id):
-    for todo in todos:
-        if todo["id"] == id:
-            todo["status"] = not todo["status"]
+
+def doneTodo(todos, todo):
+    if todo in todos:
+        todo["status"] = not todo["status"]
+
 
 def getTodos(todos, idCount):
     try:
@@ -107,16 +142,20 @@ def printHeaderTodo(table):
     table.field_names = ["No.", "Nama", "Status", "Deadline", "Time Left"]
     return table
 
+
 def printTodo(todo):
     table = PrettyTable()
     table.field_names = ["Nama", "Status", "Deadline", "Time Left"]
-    table.add_row([
-        todo["name"],
-        "done" if todo["status"] else "not done",
-        todo["timeLeft"] if todo["status"] else todo["deadline"],
-        todo["timeLeft"],
-    ])
+    table.add_row(
+        [
+            todo["name"],
+            "done" if todo["status"] else "not done",
+            todo["timeLeft"] if todo["status"] else todo["deadline"],
+            todo["timeLeft"],
+        ]
+    )
     print(table)
+
 
 def printTodos(todos):
     table = PrettyTable()
@@ -124,24 +163,29 @@ def printTodos(todos):
     table = printHeaderTodo(table)
     i = 1
     for todo in todos:
-        table.add_row([
-            i,
-            todo["name"],
-            "done" if todo["status"] else "not done",
-            todo["timeLeft"] if todo["status"] else todo["deadline"],
-            todo["timeLeft"],
-        ])
+        table.add_row(
+            [
+                i,
+                todo["name"],
+                "done" if todo["status"] else "not done",
+                todo["timeLeft"] if todo["status"] else todo["deadline"],
+                todo["timeLeft"],
+            ]
+        )
         i += 1
     print(table)
+
 
 def filterTodos(todos, hide):
     if hide:
         todos = [todo for todo in todos if not todo["status"]]
     return todos
 
+
 def sortTodos(todos):
     todos = sorted(todos, key=lambda todo: todo["status"])
     return todos
+
 
 idCount = 0
 todos = []
@@ -171,7 +215,7 @@ while isRunning:
             int(menuselect)
             if (int(menuselect) > 0) and (int(menuselect) <= len(todosFiltered)):
                 id = todosFiltered[int(menuselect) - 1]["id"]
-                editTodo(todos, id)
+                actionTodo(id, todos)
         except ValueError:
             err = True
     updateTimeLeft(todos)
