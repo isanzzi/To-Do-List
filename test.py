@@ -36,6 +36,14 @@ def createTodo(todos, i):
     updateTodo(todos)
     return todos, i
 
+def deleteTodo(todos, todo):
+    if todo in todos:
+        del todos[todo]
+
+def updatestodostatus(todos, todo):
+    for i, todo in enumerate(todos, start=1):
+        print(f"{i}. {todo['name']} | {'done' if todo['status'] else 'not done'}")
+
 
 def updateTimeLeft(todos):
     for todo in todos:
