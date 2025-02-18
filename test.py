@@ -116,7 +116,7 @@ def printTodo(todo):
         + ("done" if todo["status"] else "not done")
         + " | "
         + (todo["timeLeft"] if todo["status"] else todo["deadline"])
-        + " |"
+        + " | "
         + todo["timeLeft"]
     )
     # i += 1
@@ -156,10 +156,10 @@ hideDone = False
 while isRunning:
     # Return the updated serial number
     todos, idCount = getTodos(todos, idCount)
-    todos = filterTodo(todos, hideDone)
+    todosFiltered = filterTodo(todos, hideDone)
     clearTerminal()
 
-    printTodos(todos)
+    printTodos(todosFiltered)
     print(
         "Menu:\n- q untuk quit\n- pilih nomer untuk edit, done, atau delete\n- c untuk create\n- "
         + ("h untuk show done" if hideDone else "h untuk hide done")
@@ -175,8 +175,8 @@ while isRunning:
         err = False
         try:
             int(menuselect)
-            if (int(menuselect) > 0) and (int(menuselect) <= len(todos)):
-                id = todos[int(menuselect) - 1]["id"]
+            if (int(menuselect) > 0) and (int(menuselect) <= len(todosFiltered)):
+                id = todosFiltered[int(menuselect) - 1]["id"]
                 todos, idCount = actionTodo(id, todos, idCount)
         except ValueError:
             err = True
