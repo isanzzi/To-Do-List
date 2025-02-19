@@ -52,12 +52,23 @@ def createTodo(todos, i):
     dateNow = datetime.datetime.now()
     timeleft = deadline - dateNow
 
+    while True:
+        prioritas = input("Tingkat prioritas (1 = least priority, 5 = max priority): ")
+        try:
+            prioritas = int(prioritas)
+            if 1 <= prioritas <= 5:
+                break
+            else:
+                print("Input tidak valid")
+        except ValueError:
+            print("Input tidak valid")
     todos.append(
         {
             "id": i,
             "name": newTodo,
             "deadline": deadline_str,
             "timeLeft": str(timeleft),
+            "prioritas": prioritas,
             "status": False,
         }
     )
@@ -113,6 +124,20 @@ def editDeadline(todo):
             todo["timeLeft"] = str(new_deadline - dateNow)
         else:
             print("Format tanggal salah. Harap masukkan dalam format DD/MM/YYYY HH:MM.")
+    editPrioritas(todo)
+
+
+def editPrioritas(todo):
+    prioritas = input("Tingkat prioritas (1 = least priority, 5 = max priority): ")
+    if prioritas:
+        try:
+            prioritas = int(prioritas)
+            if 1 <= prioritas <= 5:
+                todo["prioritas"] = prioritas
+            else:
+                print("Input tidak valid")
+        except ValueError:
+            print("Input tidak valid")
 
 
 def editTodo(todo, todos):
@@ -144,18 +169,19 @@ def getTodos(todos, idCount):
 
 
 def printHeaderTodo(table):
-    table.field_names = ["No.", "Nama", "Status", "Deadline", "Time Left"]
+    table.field_names = ["No.", "Nama", "Status", "Prioritas", "Deadline", "Time Left"]
     return table
 
 
 def printTodo(todo):
     table = PrettyTable()
-    table.field_names = ["Nama", "Status", "Deadline", "Time Left"]
+    table.field_names = ["Nama", "Status", "Prioritas", "Deadline", "Time Left"]
     table.add_row(
         [
             todo["name"],
             "done" if todo["status"] else "not done",
-            todo["timeLeft"] if todo["status"] else todo["deadline"],
+            todo["prioritas"],
+            todo["deadline"],
             todo["timeLeft"],
         ]
     )
@@ -173,7 +199,8 @@ def printTodos(todos):
                 i,
                 todo["name"],
                 "done" if todo["status"] else "not done",
-                todo["timeLeft"] if todo["status"] else todo["deadline"],
+                todo["prioritas"],
+                todo["deadline"],
                 todo["timeLeft"],
             ]
         )
@@ -187,8 +214,34 @@ def filterTodos(todos, hide):
     return todos
 
 
-def sortTodos(todos):
-    todos = sorted(todos, key=lambda todo: todo["status"])
+def sortSelect():
+    clearTerminal()
+    print("Pilih metode sortir:")
+    print("1. Default (not done dulu)")
+    print("2. Berdasarkan tanggal (terdekat dulu)")
+    print("3. Berdasarkan tanggal (terjauh dulu)")
+    print("4. Berdasarkan prioritas (tertinggi dulu)")
+    print("5. Berdasarkan prioritas (terendah dulu)")
+    pilihan = input("Masukkan nomor metode sortir: ")
+    return pilihan
+
+
+def sortTodos(todos, pilihan):
+    if pilihan == "2":
+        todos.sort(
+            key=lambda x: datetime.datetime.strptime(x["deadline"], "%d/%m/%Y %H:%M")
+        )
+    elif pilihan == "3":
+        todos.sort(
+            key=lambda x: datetime.datetime.strptime(x["deadline"], "%d/%m/%Y %H:%M"),
+            reverse=True,
+        )
+    elif pilihan == "4":
+        todos.sort(key=lambda x: x["prioritas"], reverse=True)
+    elif pilihan == "5":
+        todos.sort(key=lambda x: x["prioritas"])
+    else:
+        todos = sorted(todos, key=lambda todo: todo["status"])
     return todos
 
 
@@ -196,16 +249,18 @@ idCount = 0
 todos = []
 isRunning = True
 hideDone = False
+sortMode = 1
 
 while isRunning:
     todos, idCount = getTodos(todos, idCount)
     todosFiltered = filterTodos(todos, hideDone)
-    todosFiltered = sortTodos(todosFiltered)
+    todosFiltered = sortTodos(todosFiltered, sortMode)
     clearTerminal()
     printTodos(todosFiltered)
     print(
         "Menu:\n- q untuk quit\n- pilih nomer untuk edit, done, atau delete\n- c untuk create\n- "
         + ("h untuk show done" if hideDone else "h untuk hide done")
+        + "\n- s untuk pilih metode sorting"
     )
     menuselect = input()
     if menuselect == "q":
@@ -214,6 +269,8 @@ while isRunning:
         todos, idCount = createTodo(todos, idCount)
     elif menuselect == "h":
         hideDone = not hideDone
+    elif menuselect == "s":
+        sortMode = sortSelect()
     else:
         err = False
         try:
